@@ -65,6 +65,9 @@ func main() {
 	fmt.Printf("Users found with Limit and Offset: %+v\n", users7)
 
 	QuryNonModelDefault(db)
+	UpdateDataUserAllColumn(db)
+	UpdateDataUserOneColumn(db)
+	UpdateDataUserMultipleColumn(db)
 }
 
 func QuryNonModelDefault(db *gorm.DB) {
@@ -94,4 +97,26 @@ func QuryNonModelDefault(db *gorm.DB) {
 	}
 	fmt.Printf("Random user: %+v\n", randomUser)
 
+	// Mengambil semua object objek
+	var allUser []UserResponse
+	if err := db.Model(&User{}).Select("name", "email").Find(&allUser).Error; err != nil {
+		log.Fatalf("failed to find random user: %v", err)
+	}
+	fmt.Printf("Random user: %+v\n", randomUser)
+}
+
+func UpdateDataUserAllColumn(db *gorm.DB) {
+	var user User
+	db.First(&user, "email = ?", "budi.santoso@example.com")
+
+	user.Name = "Budi Santoso Baru"
+	db.Save(&user)
+}
+
+func UpdateDataUserOneColumn(db *gorm.DB) {
+	db.Model(&User{}).Where("email = ?", "budi.santoso@example.com").Update("name", "Budi Santoso Baru")
+}
+
+func UpdateDataUserMultipleColumn(db *gorm.DB) {
+	db.Model(&User{}).Where("email = ?", "budi.santoso@example.com").Updates(User{Name: "Budi Santoso Baru", Email: "budi.baru@gmail.com"})
 }
