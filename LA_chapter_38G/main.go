@@ -25,6 +25,23 @@ func main() {
 		log.Fatalf("failed to connect database: %v", err)
 	}
 
+	// implementation advance query
+	AdvanceQuery(db)
+
+	// implementation query non model default
+	QueryNonModelDefault(db)
+
+	// implementation update data all column
+	UpdateDataUserAllColumn(db)
+
+	// implementation update data one column
+	UpdateDataUserOneColumn(db)
+
+	// implementation update data multiple column
+	UpdateDataUserMultipleColumn(db)
+}
+
+func AdvanceQuery(db *gorm.DB) {
 	// Contoh menggunakan Where, Or, Not
 	var users1 []User
 	db.Where("name = ?", "Budi Santoso").Or("email = ?", "budi.santoso@example.com").Find(&users1)
@@ -63,14 +80,9 @@ func main() {
 	var users7 []User
 	db.Offset(0).Limit(5).Order("created_at desc").Find(&users7)
 	fmt.Printf("Users found with Limit and Offset: %+v\n", users7)
-
-	QuryNonModelDefault(db)
-	UpdateDataUserAllColumn(db)
-	UpdateDataUserOneColumn(db)
-	UpdateDataUserMultipleColumn(db)
 }
 
-func QuryNonModelDefault(db *gorm.DB) {
+func QueryNonModelDefault(db *gorm.DB) {
 	type UserResponse struct {
 		Name  string `gorm:"type:varchar(100);not null"`
 		Email string `gorm:"type:varchar(100);uniqueIndex;not null"`
