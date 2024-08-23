@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"time"
 
@@ -34,17 +33,25 @@ func main() {
 	// Migrate the schema
 	db.AutoMigrate(&User{})
 
+	// Insert users into the database auto increment
+	insertDataautoIncrement(db)
+
+	// implement Upsert data user
+	UpSertDataUser(db)
+}
+
+func insertDataautoIncrement(db *gorm.DB) {
 	// Create users
 	users := []User{
 		{Name: "Budi Santoso", Email: "budi.santoso@example.com", Password: "password"},
 		{Name: "Siti Nurhaliza", Email: "siti.nurhaliza@example.com", Password: "password"},
 		{Name: "Agus Salim", Email: "agus.salim@example.com", Password: "password"},
 	}
+	result := db.Create(&users)
 
-	// Insert users into the database
-	for _, user := range users {
-		db.Create(&user)
-		fmt.Printf("User created with ID: %d, Name: %s, Email: %s\n", user.ID, user.Name, user.Email)
+	// Check for errors
+	if result.Error != nil {
+		panic("failed to insert batch records")
 	}
 }
 
@@ -69,8 +76,7 @@ func UpSertDataUser(db *gorm.DB) {
 
 	// OnConflict akan melakukan upsert berdasarkan email
 	db.Clauses(clause.OnConflict{
-		Columns:   []clause.Column{{Name: "email"}},
-		DoUpdates: clause.AssignmentColumns([]string{"name", "password"}),
+		UpdateAll: true,
 	}).Create(&user2)
 
 	log.Printf("User upserted with Email: %s", user2.Email)
