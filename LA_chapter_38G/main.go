@@ -25,6 +25,15 @@ func main() {
 		log.Fatalf("failed to connect database: %v", err)
 	}
 
+	// Auto-migrate the User model
+	err = db.AutoMigrate(&User{})
+	if err != nil {
+		log.Fatalf("failed to migrate database: %v", err)
+	}
+
+	//insert data user
+	InsertDataUser(db)
+
 	// implementation advance query
 	AdvanceQuery(db)
 
@@ -39,6 +48,21 @@ func main() {
 
 	// implementation update data multiple column
 	UpdateDataUserMultipleColumn(db)
+}
+
+func InsertDataUser(db *gorm.DB) {
+	// Menambahkan 5 data pengguna
+	users := []User{
+		{Name: "Budi Santoso", Email: "budi.santoso@example.com"},
+		{Name: "Siti Rahmawati", Email: "siti.rahmawati@example.com"},
+		{Name: "Andi Wijaya", Email: "andi.wijaya@example.com"},
+		{Name: "Dewi Kartika", Email: "dewi.kartika@example.com"},
+		{Name: "Joko Prasetyo", Email: "joko.prasetyo@example.com"},
+	}
+
+	// Melakukan batch insert
+	db.Create(&users)
+	fmt.Println("success insert data user")
 }
 
 func AdvanceQuery(db *gorm.DB) {
